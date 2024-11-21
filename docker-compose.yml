@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .  # Build context points to the current directory
+      dockerfile: Dockerfile  # Ensure the correct Dockerfile is used
+    volumes:
+      - .:/app  # Mount the local project directory into the container
+    ports:
+      - "8000:8000"  # Map container's port 8000 to host's port 8000
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DEBUG=${DEBUG}
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
+
+  db:
+    image: sqlite  # Use SQLite database image for lightweight usage
+    volumes:
+      - ./db.sqlite3:/data/db.sqlite3  # Mount SQLite file to persist data
+
+  # Optional: Redis cache service (if used in the project)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
