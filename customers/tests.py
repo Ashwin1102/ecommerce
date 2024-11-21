@@ -41,7 +41,7 @@ class CustomerTests(TestCase):
 
     def test_get_customers(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_201_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_customers(self):
         geolocation_data_2 = GeolocationSerializer(self.geolocation_2).data
