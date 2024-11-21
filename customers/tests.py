@@ -35,8 +35,8 @@ class CustomerTests(TestCase):
         }
 
         self.client = APIClient()
-        Customer.objects.create(**self.customer_data_1)
-        Customer.objects.create(**self.customer_data_2)
+        self.customer1 = Customer.objects.create(**self.customer_data_1)
+        self.customer2 = Customer.objects.create(**self.customer_data_2)
         self.url = reverse('customer-list')
 
     def test_get_customers(self):
@@ -65,6 +65,51 @@ class CustomerTests(TestCase):
         response = self.client.post(self.url, {'customers': new_customers}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # self.assertEqual(len(response.data), 2)
-        # self.assertEqual(response.data[0]['customer_id'], '13256')
-        # self.assertEqual(response.data[1]['customer_id'], '13267')
+    def test_post_customers(self):
+        geolocation_data_2 = GeolocationSerializer(self.geolocation_2).data
+        new_customers = [
+            {
+                "customer_id": "13256",
+                "customer_unique_id": "3",
+                "customer_zip_code_prefix": geolocation_data_2['geolocation_zip_code_prefix'],
+                "customer_city": "3241",
+                "customer_state": "431"
+            },
+            {   
+                "customer_id": "13267",
+                "customer_unique_id": "35",
+                "customer_zip_code_prefix": geolocation_data_2['geolocation_zip_code_prefix'],
+                "customer_city": "324",
+                "customer_state": "31"
+            }
+        ]
+
+        response = self.client.post(self.url, {'customers': new_customers}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    def test_delete_all_customers(self):
+        url = reverse('customer-delete-all')
+        self.assertEqual(Customer.objects.count(), 2)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Customer.objects.count(), 0)
+        self.assertEqual(response.data['message'], 'All customers have been deleted.')
+
+    def test_delete_customer_by_id(self):
+        url = reverse('customer-delete-by-id', args=[self.customer1.pk])
+        self.assertEqual(Customer.objects.count(), 2)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Customer.objects.count(), 1)
+        self.assertEqual(response.data['message'], f"Customer with ID {self.customer1.pk} has been deleted.")
+        self.assertFalse(Customer.objects.filter(pk=self.customer1.pk).exists())
+
+    def test_get_customer_by_id(self):
+        url = reverse('customer-get-by-id', args=[self.customer1.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['customer_id'], self.customer1.pk)
+        self.assertEqual(response.data['customer_unique_id'], self.customer1.customer_unique_id)
+        self.assertEqual(response.data['customer_city'], self.customer1.customer_city)
+        self.assertEqual(response.data['customer_state'], self.customer1.customer_state)
+

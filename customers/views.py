@@ -26,3 +26,41 @@ def customer_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['DELETE'])
+def customer_delete_by_id(request, pk):
+    try:
+        customer = Customer.objects.get(pk=pk)
+    except Customer.DoesNotExist:
+        return Response(
+            {"error": "Customer not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    customer.delete()
+    return Response(
+        {"message": f"Customer with ID {pk} has been deleted."},
+        status=status.HTTP_200_OK
+    )
+
+@api_view(['GET'])
+def customer_get_by_id(request, pk):
+    try:
+        customer = Customer.objects.get(pk=pk)
+    except Customer.DoesNotExist:
+        return Response(
+            {"error": "Customer not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    serializer = CustomerSerializer(customer)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def customer_delete_all(request):
+    Customer.objects.all().delete()
+    return Response(
+        {"message": "All customers have been deleted."},
+        status=status.HTTP_200_OK
+    )

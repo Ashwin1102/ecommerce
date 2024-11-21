@@ -17,7 +17,7 @@ def geolocation_list(request):
     if request.method == "POST":
         if not isinstance(request.data.get('geolocations', None), list):
             return Response(
-                {"error": "Invalid request body. Expected a list of customers under the key 'customers'."},
+                {"error": "Invalid request body. Expected a list of geolocation under the key 'geolocations'."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -28,3 +28,41 @@ def geolocation_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['DELETE'])
+def geolocation_delete_by_id(request, pk):
+    try:
+        geolocation = Geolocation.objects.get(pk=pk)
+    except Geolocation.DoesNotExist:
+        return Response(
+            {"error": "Geolocation not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    geolocation.delete()
+    return Response(
+        {"message": f"Geolocation with ID {pk} has been deleted."},
+        status=status.HTTP_200_OK
+    )
+
+@api_view(['GET'])
+def geolocation_get_by_id(request, pk):
+    try:
+        geolocation = Geolocation.objects.get(pk=pk)
+    except Geolocation.DoesNotExist:
+        return Response(
+            {"error": "Geolocation not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    serializer = GeolocationSerializer(geolocation)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def geolocation_delete_all(request):
+    Geolocation.objects.all().delete()
+    return Response(
+        {"message": "All geolocation have been deleted."},
+        status=status.HTTP_200_OK
+    )
