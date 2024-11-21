@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4  # Sets up Python in the pipeline
         with:
-          python-version: 3.9  # Specify the Python version you use
+          python-version: 3.12  # Specify the Python version you use
 
       - name: Install dependencies
         run: |
