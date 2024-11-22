@@ -33,8 +33,8 @@ class SellerTests(TestCase):
         }
 
         self.client = APIClient()
-        Sellers.objects.create(**self.seller_data_1)
-        Sellers.objects.create(**self.seller_data_2)
+        self.sellers1 = Sellers.objects.create(**self.seller_data_1)
+        self.sellers2 = Sellers.objects.create(**self.seller_data_2)
         self.url = reverse('seller-list')
 
     def test_get_sellers(self):
@@ -61,3 +61,29 @@ class SellerTests(TestCase):
         response = self.client.post(self.url, {'sellers': new_sellers}, format='json')
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_all_sellers(self):
+        url = reverse('seller-delete-all')
+        self.assertEqual(Sellers.objects.count(), 2)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Sellers.objects.count(), 0)
+        self.assertEqual(response.data['message'], 'All sellers have been deleted.')
+
+    def test_delete_sellers_by_id(self):
+        url = reverse('seller-delete-by-id', args=[self.sellers1.pk])
+        self.assertEqual(Sellers.objects.count(), 2)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Sellers.objects.count(), 1)
+        self.assertEqual(response.data['message'], f"Sellers with ID {self.sellers1.pk} has been deleted.")
+        self.assertFalse(Sellers.objects.filter(pk=self.sellers1.pk).exists())
+
+    def test_get_sellers_by_id(self):
+        url = reverse('seller-get-by-id', args=[self.sellers1.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['seller_id'], self.sellers1.pk)
+        self.assertEqual(response.data['seller_city'], self.sellers1.seller_city)
+        self.assertEqual(response.data['seller_state'], self.sellers1.seller_state)
+

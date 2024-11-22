@@ -28,3 +28,40 @@ def sellers_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['DELETE'])
+def seller_delete_by_id(request, pk):
+    try:
+        seller = Sellers.objects.get(pk=pk)
+    except Sellers.DoesNotExist:
+        return Response(
+            {"error": "Sellers not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    seller.delete()
+    return Response(
+        {"message": f"Sellers with ID {pk} has been deleted."},
+        status=status.HTTP_200_OK
+    )
+
+@api_view(['GET'])
+def seller_get_by_id(request, pk):
+    try:
+        seller = Sellers.objects.get(pk=pk)
+    except Sellers.DoesNotExist:
+        return Response(
+            {"error": "Sellers not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    serializer = SellerSerializer(seller)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def seller_delete_all(request):
+    Sellers.objects.all().delete()
+    return Response(
+        {"message": "All sellers have been deleted."},
+        status=status.HTTP_200_OK
+    )

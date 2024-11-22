@@ -26,4 +26,7 @@ urlpatterns = [
 
     # Sellers
     path('sellers/', sellers_views.sellers_list, name='seller-list'),
+    path('sellers/<int:pk>/', sellers_views.seller_get_by_id, name='seller-get-by-id'),
+    path('sellers/<int:pk>/delete/', sellers_views.seller_delete_by_id, name='seller-delete-by-id'),
+    path('sellers/delete/', sellers_views.seller_delete_all, name='seller-delete-all')
 ]
