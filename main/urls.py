@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from customers import views as customer_views
-from geolocations import views as geolocations_views
-from sellers import views as sellers_views
+from categories import views as categories_views
+from products import views as products_views
 from django.shortcuts import redirect
 
 def redirect_to_admin(request):
@@ -18,12 +18,15 @@ urlpatterns = [
     path('customers/<int:pk>/delete/', customer_views.customer_delete_by_id, name='customer-delete-by-id'),
     path('customers/delete/', customer_views.customer_delete_all, name='customer-delete-all'),
 
-    # Geolocations
-    path('geolocations/', geolocations_views.geolocation_list, name='geolocation-list'),
-    path('geolocations/<int:pk>/', geolocations_views.geolocation_get_by_id, name='geolocation-get-by-id'),
-    path('geolocations/<int:pk>/delete/', geolocations_views.geolocation_delete_by_id, name='geolocation-delete-by-id'),
-    path('geolocations/delete/', geolocations_views.geolocation_delete_all, name='geolocation-delete-all'),
+    # Categories
+    path('categories/', categories_views.categories_list, name='categories-list'),
+    path('categories/<int:pk>/', categories_views.categories_get_by_id, name='categories-get-by-id'),
+    path('categories/<int:pk>/delete/', categories_views.categories_delete_by_id, name='categories-delete-by-id'),
+    path('categoriess/delete/', categories_views.categories_delete_all, name='categories-delete-all'),
 
-    # Sellers
-    path('sellers/', sellers_views.sellers_list, name='seller-list'),
+    # Products
+    path('products/', products_views.products_list, name='products-list'),
+    path('products/<int:pk>/', products_views.products_get_by_id, name='products-get-by-id'),
+    path('products/<int:pk>/delete/', products_views.products_delete_by_id, name='products-delete-by-id'),
+    path('products/delete/', products_views.products_delete_all, name='products-delete-all')
 ]
