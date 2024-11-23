@@ -2,7 +2,7 @@ from django.db import models
 from categories.models import Categories
 
 class Products(models.Model):
-    product_id = models.CharField(max_length=200, primary_key=True)
+    product_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
     price = models.FloatField()
