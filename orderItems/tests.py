@@ -6,15 +6,21 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 from customers.models import Customer
 from rest_framework import status
-
+from categories.models import Categories
 
 class TestOrderItems(TestCase):
     def setUp(self):
+        self.category1 = Categories.objects.create(
+            name='Food',
+            description='Food'
+        )
+
         self.products1 = Products.objects.create(
             name='Foodx',
             description='Foodx',
             price=23.56,
             stock_quantity=34,
+            category_id=self.category1,
             brand='Haldiram'
         )
 
@@ -23,6 +29,7 @@ class TestOrderItems(TestCase):
             description='Foodx',
             price=23.56,
             stock_quantity=34,
+            category_id=self.category1,
             brand='Haldiram'
         )
 
@@ -37,31 +44,31 @@ class TestOrderItems(TestCase):
 
         self.order1 = Orders.objects.create(
             order_id=1,
-            customer_id=self.customer1['customer_id'],
+            customer_id=self.customer1,
             order_status='Pending',
             total_amount=47.12
         )
 
         self.orderItem_data_1 = {
-            'order_id': self.order1['order_id'],
-            'product_id': self.products1['product_id'],
+            'order_id': self.order1,
+            'product_id': self.products1,
             'quantity': 2,
             'total_price': 47.12,
             'price_per_unit': 23.56
         }
 
         self.orderItem_data_2 = {
-            'order_id': self.order1['order_id'],
-            'product_id': self.products1['product_id'],
+            'order_id': self.order1,
+            'product_id': self.products1,
             'quantity': 2,
             'total_price': 47.12,
             'price_per_unit': 23.56
         }
 
         self.client = APIClient()
-        self.orderItem1 = Products.objects.create(**self.orderItem_data_1)
-        self.orderItem2 = Products.objects.create(**self.orderItem_data_2)
-        self.url = reverse('products-list')
+        self.orderItem1 = OrderItems.objects.create(**self.orderItem_data_1)
+        self.orderItem2 = OrderItems.objects.create(**self.orderItem_data_2)
+        self.url = reverse('orderItems-list')
     
     def test_get_orderItems(self):
         response = self.client.get(self.url)
@@ -70,15 +77,15 @@ class TestOrderItems(TestCase):
     def test_post_orderItems(self):
         new_orderItems = [
             {
-                'order_id': self.order1['order_id'],
-                'product_id': self.products1['product_id'],
+                'order_id': self.order1.pk,
+                'product_id': self.products1.pk,
                 'quantity': 2,
                 'total_price': 47.12,
                 'price_per_unit': 23.56
             },
             {   
-                'order_id': self.order1['order_id'],
-                'product_id': self.products1['product_id'],
+                'order_id': self.order1.pk,
+                'product_id': self.products1.pk,
                 'quantity': 2,
                 'total_price': 47.12,
                 'price_per_unit': 23.56
@@ -86,6 +93,7 @@ class TestOrderItems(TestCase):
         ]
 
         response = self.client.post(self.url, {'orderItems': new_orderItems}, format='json')
+        print("Here is the ", response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     
     def test_delete_all_orderItems(self):
@@ -98,12 +106,12 @@ class TestOrderItems(TestCase):
 
     def test_delete_orderItems_by_id(self):
         url = reverse('orderItems-delete-by-id', args=[self.orderItem1.pk])
-        self.assertEqual(Customer.objects.count(), 2)
+        self.assertEqual(OrderItems.objects.count(), 2)
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Customer.objects.count(), 1)
-        self.assertEqual(response.data['message'], f"OrderItems with ID {self.orderItem1.pk} has been deleted.")
-        self.assertFalse(Customer.objects.filter(pk=self.orderItem1.pk).exists())
+        self.assertEqual(OrderItems.objects.count(), 1)
+        self.assertEqual(response.data['message'], f"orderItems with ID {self.orderItem1.pk} has been deleted.")
+        self.assertFalse(OrderItems.objects.filter(pk=self.orderItem1.pk).exists())
 
     # def test_get_orderItems_by_id(self):
     #     url = reverse('orderItems-get-by-id', args=[self.orderItem1.pk])
