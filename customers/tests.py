@@ -7,7 +7,6 @@ from .models import Customer
 class CustomerTests(TestCase):
     def setUp(self):
         self.customer_data_1 = {
-            'customer_id': '132',
             'first_name': 'ash',
             'last_name': "ka",
             "email": "email@email.com",
@@ -16,7 +15,6 @@ class CustomerTests(TestCase):
             "address": "Beacon St"
         }
         self.customer_data_2 = {
-            'customer_id': '1321',
             'first_name': 'ash',
             'last_name': "ka",
             "email": "email@email.com",
@@ -37,7 +35,6 @@ class CustomerTests(TestCase):
     def test_post_customers(self):
         new_customers = [
             {
-                'customer_id': '13277',
                 'first_name': 'ash',
                 'last_name': "ka",
                 "email": "email@email.com",
@@ -46,7 +43,6 @@ class CustomerTests(TestCase):
                 "address": "Beacon St"
             },
             {   
-                'customer_id': '13298',
                 'first_name': 'ash',
                 'last_name': "ka",
                 "email": "email@email.com",
@@ -62,7 +58,6 @@ class CustomerTests(TestCase):
     def test_post_customers(self):
         new_customers = [
             {
-                'customer_id': '13277',
                 'first_name': 'ash',
                 'last_name': "ka",
                 "email": "email@email.com",
@@ -71,7 +66,6 @@ class CustomerTests(TestCase):
                 "address": "Beacon St"
             },
             {   
-                'customer_id': '13298',
                 'first_name': 'ash',
                 'last_name': "ka",
                 "email": "email@email.com",
@@ -105,7 +99,6 @@ class CustomerTests(TestCase):
         url = reverse('customer-get-by-id', args=[self.customer1.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['customer_id'], self.customer1.pk)
         self.assertEqual(response.data['first_name'], self.customer1.first_name)
         self.assertEqual(response.data['last_name'], self.customer1.last_name)
         self.assertEqual(response.data['email'], self.customer1.email)
