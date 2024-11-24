@@ -6,6 +6,8 @@ from products import views as products_views
 from django.shortcuts import redirect
 from orders import views as orders_views
 from orderItems import views as orderItems_views
+from carts import views as carts_views
+from cartItems import views as cartItems_views
 
 def redirect_to_admin(request):
     return redirect('/admin')
@@ -43,4 +45,16 @@ urlpatterns = [
     path('orderItems/<int:pk>/', orderItems_views.orderItems_get_by_id, name='orderItems-get-by-id'),
     path('orderItems/<int:pk>/delete/', orderItems_views.orderItems_delete_by_id, name='orderItems-delete-by-id'),
     path('orderItems/delete/', orderItems_views.orderItems_delete_all, name='orderItems-delete-all'),
+
+    # Carts
+    path('carts/', carts_views.carts_list, name='carts-list'),
+    path('carts/<int:pk>/', carts_views.carts_get_by_id, name='carts-get-by-id'),
+    path('carts/<int:pk>/delete/', carts_views.carts_delete_by_id, name='carts-delete-by-id'),
+    path('carts/delete/', carts_views.carts_delete_all, name='carts-delete-all'),
+
+    # Cart Items
+    path('cartItems/', cartItems_views.cartItems_list, name='cartItems-list'),
+    path('cartItems/<int:pk>/', cartItems_views.cartItems_get_by_id, name='cartItems-get-by-id'),
+    path('cartItems/<int:pk>/delete/', cartItems_views.cartItems_delete_by_id, name='cartItems-delete-by-id'),
+    path('cartItems/delete/', cartItems_views.cartItems_delete_all, name='cartItems-delete-all'),
 ]
